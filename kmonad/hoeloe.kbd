@@ -1,0 +1,244 @@
+
+
+(defcfg
+  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+	output (uinput-sink "KMonad kbd"
+		"sleep 1 && setxkbmap -option compose:ralt")
+	fallthrough true
+ cmp-seq ralt    ;; Set the compose key to `RightAlt'
+;;  cmp-seq-delay 5 ;; 5ms delay between each compose-key sequence press
+
+)
+
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12       
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    ret      
+  caps a    s    d    f    g    h    j    k    l    ;    '    1    
+  lsft 102d z    x    c    v    b    n    m    ,    .    /   rsft       
+  lctl lmet lalt           spc            ralt cmp  rctl      
+)
+
+
+
+(defalias
+	win (tap-next-release KeyMenu lmet)
+	ss (tap-next-release S-spc lsft)
+;;	wt   (layer-toggle word)
+  wt (tap-next-release y (layer-toggle word))
+	wst  (layer-toggle wordshift)
+	nt   (layer-toggle numbers)
+	ntr   (tap-next-release ret (layer-toggle numbers))
+	nst   (layer-toggle numbersshift)
+	st   (layer-toggle symbols)
+	ecth (tap-next-release esc (layer-toggle movement))
+	ith  (tap-next-release i (layer-toggle select))
+	sst  (layer-toggle selectshift)
+	eth  (tap-next-release e (layer-toggle search))
+	srst  (layer-toggle searchshift)
+	oth  (tap-next-release o (layer-toggle view))
+	rth  (tap-next-release r (layer-toggle cursor))
+	tnh  (tap-hold-next-release 2000 x lsft)
+
+	spe (layer-delay 500 speed)
+
+
+;;  lft t
+  lft (around t (layer-delay 500 speed))
+  rgt (around s (layer-delay 500 speed))
+
+	tyl (layer-switch typing)
+	hol (layer-switch hoeloe)
+	kak (layer-switch kak)
+)
+
+(defalias
+ ,; (tap-hold-next-release 125 , ; )
+ .: (tap-hold-next-release 125 . : )
+ == (tap-hold-next-release 125 = #(= >) )
+ =>  #(= > spc)
+ -> (tap-hold-next-release 125 - #(- >) ) 
+ <- (tap-hold-next-release 125 \_ #(< -) ) 
+)
+
+(defalias
+ tab (tap-hold-next-release 125 M-Tab #(M-z) ) 
+ mrk M-S-u
+)
+
+(defalias
+ a #(a (layer-switch kak-typing)) 
+ b #(b (layer-switch kak-typing)) 
+ k #(k (layer-switch kak-typing)) 
+ u #(u (layer-switch kak-typing)) 
+ se (tap-next-release #(esc (layer-switch kak)) (layer-toggle movement))
+
+)
+
+
+
+(deflayer hoeloe
+  caps  f1  @tyl @kak  f4   f5   f6   f7   f8   f9   f10  f11  f12       
+  1     1    2    3    4    5    6    7    8    9    0    1    grv   bspc
+  S-esc tab  y   @oth  ä    b    c    f    l    p    z    @mrk    1     ret
+  @ecth h   @ith @eth  a    g    d    t    n    s   @rth  @tab    1
+  lctl  q    å    ö    u    k    x    j    m    v    w    x    rsft
+  lalt @win @wt           @ss          @nt  @st  rctl       
+)
+
+(deflayer typing 
+  caps @hol  f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12       
+  1     1    2    3    4    5    6    7    8    9    0    1    grv   bspc
+  S-esc tab  y    o    ä    b    c    f    l    p    z    1    1     ret
+  @ecth h    i    e    a    g    d    t    n    s    r    1    1
+  lctl  q    å    ö    u    k    x    j    m    v    w    x    rsft
+  lalt @win @wt           @ss          @nt  @st  rctl       
+)
+
+(deflayer kak
+  caps  @hol @tyl  f3   f4   f5   f6   f7   f8   f9   f10  f11  f12       
+  1     1    2    3    4    5    6    7    8    9    0    1    grv   bspc
+  S-esc tab  y   @oth  ä    @b   c    f    l    p    z    @win    1     ret
+  @ecth h   @ith @eth  @a   g    d    t    n    s   @rth  @tab    1
+  lctl  q    å    ö    @u   @k   x    j    m    v    w    x    rsft
+  lalt @win @wt           @ss          @nt  @st  rctl       
+)
+
+(deflayer kak-typing 
+  caps @hol  f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12       
+  1     1    2    3    4    5    6    7    8    9    0    1    grv   bspc
+  S-esc tab  y    o    ä    b    c    f    l    p    z    1    1     ret
+  @se   h    i    e    a    g    d    t    n    s    r    1    1
+  lctl  q    å    ö    u    k    x    j    m    v    w    x    rsft
+  lalt @win @wt           @ss          @nt  @st  rctl       
+)
+
+(deflayer template
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer speed
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    u    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+
+
+(deflayer select
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    f8 paste  _    _    _    _
+  @sst _    _    _    _    _   copy  f5   f6   f7   _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer selectshift
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _  S-f8   _    _    _    _    _
+  _    _    _    _    _    _    _  S-f5 S-f6 S-f7   _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer word
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    f4   _    _    _    _    _
+ @wst  _    _    _    _   del  bspc  f1   f2   f3   _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer wordshift
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    S-f4 _    _    _    _    _
+  _    _    _    _    _   del  bspc  S-f1 S-f2 S-f3 _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer search
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    f12  _    _    _    _    _
+ @srst _    _    _    _    _    _    f9   f10  f11  _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer searchshift
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _   S-f12 _    _    _    _    _
+  _    _    _    _    _    _    _  S-f9 S-f10 S-f11 _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer cursor
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _  C-A-y C-A-o C-A-ä _    _    _    C-f8   _    _    _    _    _
+  _  C-A-h C-A-i C-A-e C-A-a C-A-g C-A-d C-f5 C-f6 C-f7 C-A-r  _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer view
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _   pgup  _    _    _    _    _
+  _    _    _    _    _    _    _  S-tab pgdn S-tab  _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer symbols
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    #    @    ~    |    _    _    $  _    _    _    _    _
+  _    <    >   \(    {    [    _    "    /    '    `    _    _
+  _    _    _   \)    }    ]    _    _    \   _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer numbers
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    ^    *    +    %    _    4    5    6    _    _    _    _  
+  _   @<-    @->  @.:  @,;   ?    0    1    2    3    _    _    _
+  _    _    _    &    !   @==   _     _   7    8    9    _    _    
+  _    _    _              @nst              _    _    _ 
+)
+
+(deflayer numbersshift
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    ^    *    +    %    _    4    5    6    _    _    _    _  
+  _   \_    -    :    ;    ?    0    1    2    3    _    _    _
+  _    _    _    &    !   @=>   _    _    7    8    9    _    _    
+  _    _    _              _              _    _    _ 
+)
+
+(deflayer movement
+  _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _   up    _    _    _    _    _
+  _    _    _    :    ;    _    _   left down rght  _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _ 
+)
+
