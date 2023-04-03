@@ -4,7 +4,8 @@
 
 enum layers {
     _HOELOEKAK = 0,
-	  _QWERTY,
+    _QWERTY,
+    _PRACTICE,
     _NUMBERS,
     _MOVEMENT,
     _VIEW,
@@ -27,20 +28,24 @@ enum layers {
 #define CTL_MINS MT(MOD_RCTL, KC_MINUS)
 #define CTL_Q MT(MOD_RCTL, KC_Q)
 #define ALT_ENT  MT(MOD_LALT, KC_ENT)
-#define SPWIN  MT(MOD_LGUI, S(KC_SPACE))
+#define SPWIN  MT(MOD_LGUI, LSG(KC_U))
 #define TABMV  MT(MOD_LGUI|MOD_LCTL, LGUI(KC_TAB))
 
 
-#define LESC MT(MOD_LALT, KC_ESC)
-#define LO LT(_VIEW, KC_O) 
-#define LI LT(_SELECT, KC_I) 
-#define LH LT(_MOVEMENT, KC_H) 
-#define LE LT(_SEARCH, KC_E) 
-#define LR LT(_CURSOR, KC_R) 
-#define LWORD LT(_WORD, KC_Y) 
+#define LG MT(MOD_LSFT, KC_G)
+#define LD MT(MOD_LSFT, KC_D)
+#define LY MT(MOD_LALT, KC_Y)
 
-#define LSYM LT(_SYMBOLS, KC_Y) 
-#define LNUM LT(_NUMBERS, KC_Y) 
+#define LESC MT(MOD_LALT, KC_ESC)
+#define LO LT(_VIEW, KC_O)
+#define LI LT(_SELECT, KC_I)
+#define LH LT(_MOVEMENT, KC_H)
+#define LE LT(_SEARCH, KC_E)
+#define LR LT(_CURSOR, KC_R)
+#define LWORD LT(_WORD, KC_ESC)
+
+#define LSYM LT(_SYMBOLS, KC_Y)
+#define LNUM LT(_NUMBERS, KC_Y)
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -55,6 +60,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case MT(MOD_LGUI|MOD_LCTL, LGUI(KC_TAB)):
             if (record->tap.count && record->event.pressed) {
                 tap_code16(LGUI(KC_TAB)); // Intercept hold function to send Ctrl-X
+                return false;
+            }
+            return true;
+        case MT(MOD_LGUI, LSG(KC_U)):
+            if (record->tap.count && record->event.pressed) {
+                tap_code16(LSG(KC_U)); // Intercept hold function to send Ctrl-X
                 return false;
             }
             return true;             // Return true for normal processing of tap keycode
@@ -118,16 +129,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,              KC_E,            KC_R,            KC_T,               KC_Y,         KC_U,              KC_I,              KC_O,           KC_P,
-        KC_A,    RALT_T(KC_S),      LCTL_T(KC_D),    LSFT_T(KC_F),    KC_G,               KC_H,         LSFT_T(KC_J),      LCTL_T(KC_K),      RALT_T(KC_L),   KC_SCLN,
+        KC_A,    KC_S,             KC_D,             KC_F,    KC_G,               KC_H,         LSFT_T(KC_J),      LCTL_T(KC_K),      RALT_T(KC_L),   KC_SCLN,
         KC_Z,    KC_X,              KC_C,            KC_V,            KC_B,               KC_N,         KC_M,              KC_COMM,           KC_DOT,         KC_SLSH,
-                                    KC_DEL,          KC_SPC,          MO(1),              MO(2),        KC_BSPC,           KC_ESC
+                                    LH,          KC_SPC,          MO(1),              MO(2),        KC_ENT,           KC_ESC
+    ),
+
+    [_PRACTICE] = LAYOUT_split_3x5_3(
+        KC_K,    KC_Y,              KC_O,           KC_AE,           KC_X,               KC_Z,         KC_W,      KC_L,      KC_G,   KC_B,
+        KC_H,    KC_I,              KC_E,     		KC_A,            KC_OE,              KC_D,         KC_T,      KC_R,      KC_S,   KC_N,
+        KC_F,    KC_J,              KC_Q,           KC_AA,           KC_DOT,             KC_V,         KC_M,      KC_COMM,   KC_C,   KC_P,
+                                    LH,          KC_SPC,          MO(1),              MO(2),        KC_ENT,      KC_U
     ),
 
     [_HOELOEKAK] = LAYOUT_split_3x5_3(
-     KC_TAB, KC_Y ,   LO  ,    KC_AE,   KC_B ,                 KC_C,   KC_F ,  KC_L ,   KC_P ,  KC_Z,  
-     LH ,    LI   ,   LE  ,    KC_A ,   KC_G ,                 KC_D,   KC_T ,  KC_N ,   KC_S ,  LR,    
-     CTL_Q , KC_AA,   KC_OE,   KC_U ,   KC_K ,                 KC_J,   KC_M ,  KC_V,    KC_W ,  KC_X,  
-                   LESC, SFT_T(KC_SPC), SPWIN, 							  TABMV, LT(_NUMBERS,KC_ENT), LT(_SYMBOLS, KC_S)
+     KC_TAB, LY ,     LO  ,    KC_AE,   KC_B ,               KC_C,   KC_F ,  KC_L ,   KC_P ,  KC_Z,
+     LH ,    LI   ,   LE  ,    KC_A ,   LG ,                 LD,   KC_T ,  KC_N ,   KC_S ,  LR,
+     CTL_Q , KC_AA,   KC_OE,   KC_U ,   KC_K ,               KC_J,   KC_M ,  KC_V,    KC_W ,  KC_X,
+                   LWORD, SFT_T(KC_SPC), SPWIN, 		  TABMV, LT(_NUMBERS,KC_ENT), LT(_SYMBOLS, KC_U)
     ),
 
 
@@ -139,7 +157,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_SELECT_SHIFT] = LAYOUT_split_3x5_3(
-      _______, _______, _______, _______, _______,             _______, _______, S(KC_F8),   KC_P, _______, 
+      _______, _______, _______, _______, _______,             _______, _______, S(KC_F8),   KC_P, _______,
       _______, _______, _______, _______, _______,             KC_D,    S(KC_F5),   S(KC_F6),   S(KC_F7), _______,
       _______, _______, _______, _______, _______, 					   _______, _______, _______, _______, _______,
                         _______, _______, _______, 					   _______, _______, _______
@@ -166,9 +184,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_SEARCH_SHIFT] = LAYOUT_split_3x5_3(
-      _______, _______, _______, _______, _______,            _______, _______, KC_F4,   _______, _______, 
-      _______, _______, _______, _______, KC_DEL,             KC_BSPC,    KC_F1,   KC_F2,   KC_F3, _______, 
-      _______, _______, _______, _______, _______,  					_______, _______, _______, _______, _______, 
+      _______, _______, _______, _______, _______,            _______, _______, KC_F4,   _______, _______,
+      _______, _______, _______, _______, KC_DEL,             KC_BSPC,    KC_F1,   KC_F2,   KC_F3, _______,
+      _______, _______, _______, _______, _______,  					_______, _______, _______, _______, _______,
                         _______, _______, _______, 						_______, _______, _______
     ),
     [_CURSOR] = LAYOUT_split_3x5_3(
@@ -184,9 +202,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                         _______, _______, _______,            _______, _______, _______
     ),
     [_SYMBOLS] = LAYOUT_split_3x5_3(
-      _______, S(SE_3), ALGR(SE_2), SE_TILD, SE_PIPE,                _______, _______, SE_DLR, _______, _______, 
+      _______, S(SE_3), ALGR(SE_2), SE_TILD, SE_PIPE,                _______, _______, SE_DLR, _______, _______,
       SE_LABK, SE_RABK, S(SE_8), SE_LCBR, SE_LBRC,                   LCA(SE_PLUS), S(SE_2), SE_SLSH, SE_QUOT , SE_GRV,
-      RCS(KC_ESC), _______, S(SE_9), SE_RCBR, SE_RBRC,               LCA(SE_PLUS), SE_BSLS, SE_BSLS, SE_QUOT, SE_GRV, 
+      RCS(KC_ESC), _______, S(SE_9), SE_RCBR, SE_RBRC,               LCA(SE_PLUS), SE_BSLS, SE_BSLS, SE_QUOT, SE_GRV,
                             LGUI(KC_Y), KC_TAB, LCAG(KC_Z),					 _______, KC_TAB, _______
     ),
 
@@ -197,9 +215,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                            LGUI(KC_Y), KC_TAB, LCAG(KC_Z),     								_______, _______, _______
     ),
     [_MOVEMENT] = LAYOUT_split_3x5_3(
-      _______, _______, _______, _______, _______,           _______, _______, KC_UP,   _______, _______, 
-      _______, _______, _______, _______, KC_DEL,            KC_BSPC,    KC_LEFT,   KC_DOWN,   KC_RIGHT, _______, 
-      _______, _______, _______, _______, _______,					 _______, _______, _______, _______, _______, 
+      _______, _______, _______, _______, _______,           _______, _______, KC_UP,   _______, KC_KB_VOLUME_UP,
+      _______, _______, _______, _______, KC_DEL,            KC_BSPC,    KC_LEFT,   KC_DOWN,   KC_RIGHT, _______,
+      _______, _______, TG(_PRACTICE), TG(_HOELOEKAK), TG(_QWERTY),					 _______, _______, _______, _______, KC_KB_VOLUME_DOWN,
                         _______, _______, _______,					 _______, _______, _______
     ),
 };
