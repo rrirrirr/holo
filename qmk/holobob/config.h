@@ -8,7 +8,7 @@
 
 #define DIRECT_PINS { \
     { D5, F5, B7, F4, D3 }, \
-    { B1, C6, F7, D4,  F6}, \
+    { B1, C7, F7, D4,  F6}, \
     { B6, B2, E6, B3, D7 }, \
     { F0, B5, B4, NO_PIN, NO_PIN } \
 }
